@@ -1,20 +1,18 @@
-// Hàm xử lý thanh toán chưa hoàn tất
+// Tự động xử lý giao dịch dở dang
 function onIncompletePaymentFound(payment) {
-    console.log("Phát hiện giao dịch chưa hoàn tất:", payment);
+    console.log("Xử lý giao dịch dở dang:", payment);
+    completePayment(payment.identifier, payment.transaction.txid);
 }
 
-// Khởi tạo Pi Network SDK
+// Khởi tạo Pi SDK
 function initPiNetwork() {
     if (typeof Pi === 'undefined') {
         document.getElementById('username').innerText = "Lỗi tải Pi SDK";
         return;
     }
 
-    // Bật sandbox: true để thử nghiệm giao dịch trên Testnet
     Pi.init({ version: "2.0", sandbox: true })
-        .then(() => {
-            return Pi.authenticate(['username', 'payments'], onIncompletePaymentFound);
-        })
+        .then(() => Pi.authenticate(['username', 'payments'], onIncompletePaymentFound))
         .then(auth => {
             if (auth && auth.user) {
                 document.getElementById('username').innerText = "Kỳ thủ: " + auth.user.username;
@@ -26,7 +24,19 @@ function initPiNetwork() {
         });
 }
 
-// Hàm xử lý nạp Pi (chế độ Testnet / Demo)
+// Gọi API tự động hoàn tất giao dịch
+function completePayment(paymentId, txid) {
+    fetch(`https://api.minepi.com/v2/payments/${paymentId}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ txid: txid })
+    })
+    .then(res => res.json())
+    .then(data => console.log("Giao dịch hoàn tất thành công:", data))
+    .catch(err => console.error("Lỗi hoàn tất giao dịch:", err));
+}
+
+// Hàm nạp Pi
 function payWithPi() {
     if (typeof Pi === 'undefined') {
         alert("Pi SDK chưa sẵn sàng!");
@@ -39,20 +49,20 @@ function payWithPi() {
         metadata: { type: "deposit" },
     }, {
         onReadyForServerApproval: function(paymentId) {
-            console.log("Đã tạo giao dịch thành công với ID:", paymentId);
-            // Thông báo giả lập phê duyệt client thành công
-            alert("Tạo giao dịch Testnet thành công! ID: " + paymentId);
+            // Tự động phê duyệt trực tiếp không thông qua alert
+            fetch(`https://api.minepi.com/v2/payments/${paymentId}/approve`, {
+                method: 'POST'
+            }).catch(err => console.log("Gửi lệnh Approve:", err));
         },
         onReadyForServerCompletion: function(paymentId, txid) {
-            console.log("Hoàn tất giao dịch:", txid);
-            alert("Thanh toán thành công!");
+            completePayment(paymentId, txid);
+            document.getElementById('balance').innerText = "Ví: 1 Pi";
         },
         onCancel: function(paymentId) {
-            console.log("Người dùng đã hủy giao dịch:", paymentId);
+            console.log("Đã hủy giao dịch:", paymentId);
         },
         onError: function(error, payment) {
             console.error("Lỗi giao dịch:", error);
-            alert("Lỗi thanh toán: " + (error.message || "Giao dịch bị hủy"));
         }
     });
 }
