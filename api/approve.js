@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Phương thức không được phép' });
   }
 
-  const apiKey = "zahgkcepczux7xbvv8qaj0qdww7mgbig2o2tcuqqoyl4ntzmzpkk";
+  const apiKey = "6def5wrthkhaj3bxvlqkbdmglbvh0wkmaq2olmheqc8s5bkukglocs8sbs5f1nd8";
   const { paymentId, action } = req.body;
 
   if (!paymentId) {
