@@ -30,15 +30,24 @@ function payWithPi() {
             fetch('/api/approve', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ paymentId: paymentId })
+                body: JSON.stringify({ paymentId: paymentId, action: 'approve' })
             })
             .then(res => res.json())
             .then(data => console.log("Đã duyệt từ Server:", data))
             .catch(err => console.error("Lỗi duyệt Server:", err));
         },
         onReadyForServerCompletion: function(paymentId, txid) {
-            alert("Thanh toán thành công! Mã GD: " + txid);
-            document.getElementById('balance').innerText = "Ví: 1 Pi";
+            fetch('/api/approve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentId: paymentId, action: 'complete' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert("Thanh toán thành công! Mã GD: " + txid);
+                document.getElementById('balance').innerText = "Ví: 1 Pi";
+            })
+            .catch(err => console.error("Lỗi hoàn tất Server:", err));
         },
         onCancel: function(paymentId) {
             console.log("Hủy giao dịch:", paymentId);
