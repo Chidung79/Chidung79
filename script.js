@@ -1,15 +1,41 @@
 // Khởi tạo SDK Pi Network
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.Pi) {
-        window.Pi.init({ version: "2.0", sandbox: true });
-        
-        // Khởi tạo người dùng Pi
-        window.Pi.authenticate(['username'], function(auth) {
-            document.getElementById('username').innerText = auth.user.username;
-        }, function(error) {
-            console.error("Lỗi xác thực Pi:", error);
+    const authOverlay = document.querySelector('div[style*="position: fixed"], .auth-popup, #auth-overlay') || document.body.lastElementChild;
+
+    function hideAuthOverlay() {
+        // Tự động tìm và ẩn popup thông báo Authenticating
+        const overlays = document.querySelectorAll('div');
+        overlays.forEach(el => {
+            if (el.innerText && el.innerText.includes('Authenticating with Pi Network')) {
+                el.style.display = 'none';
+            }
         });
     }
+
+    if (window.Pi) {
+        try {
+            window.Pi.init({ version: "2.0", sandbox: true });
+            
+            // Khởi tạo người dùng Pi
+            window.Pi.authenticate(['username', 'payments'], function(auth) {
+                console.log("Xác thực thành công:", auth);
+                const userEl = document.getElementById('username');
+                if (userEl) userEl.innerText = auth.user.username;
+                hideAuthOverlay();
+            }, function(error) {
+                console.error("Lỗi xác thực Pi:", error);
+                hideAuthOverlay();
+            });
+        } catch (e) {
+            console.error("Lỗi khởi tạo SDK:", e);
+            hideAuthOverlay();
+        }
+    } else {
+        hideAuthOverlay();
+    }
+
+    // Tự động đóng popup sau 3 giây để tránh bị kẹt giao diện
+    setTimeout(hideAuthOverlay, 3000);
 });
 
 // Hàm xử lý thanh toán bằng Pi Coin
@@ -36,7 +62,7 @@ function payWithPi(amount) {
             alert("Giao dịch đã bị hủy.");
         },
         onError: function(error, payment) {
-            alert("Lỗi thanh toán: " + error.message);
+            alert("Lỗi thanh toán: " + (error.message || error));
         }
     };
 
@@ -46,6 +72,7 @@ function payWithPi(amount) {
 // Khởi tạo bàn cờ Tướng đơn giản
 const board = document.getElementById('chessboard');
 if (board) {
+    board.innerHTML = '';
     for (let i = 0; i < 90; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
