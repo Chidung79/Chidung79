@@ -1,11 +1,15 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   
-  const { paymentId } = req.body;
+  const { paymentId, action } = req.body;
   const API_KEY = "vfpniyhv8djjp1udbhoblrdobvmxaj"; 
 
+  if (!paymentId) return res.status(400).json({ error: 'Missing paymentId' });
+
+  const endpoint = action === 'complete' ? 'complete' : 'approve';
+
   try {
-    const response = await fetch(`https://api.minepi.com/v2/payments/${paymentId}/approve`, {
+    const response = await fetch(`https://api.minepi.com/v2/payments/${paymentId}/${endpoint}`, {
       method: 'POST',
       headers: {
         'Authorization': `Key ${API_KEY}`,
