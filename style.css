@@ -1,0 +1,112 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #2c3e50;
+    font-family: Arial, sans-serif;
+    color: white;
+    display: flex;
+    justify-content: center;
+}
+
+.game-container {
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    padding: 10px;
+}
+
+h1 {
+    color: #f1c40f;
+    margin-bottom: 5px;
+}
+
+.user-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    background: #34495e;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+#chessboard {
+    width: 100%;
+    aspect-ratio: 9 / 10;
+    background: #e67e22;
+    border: 5px solid #d35400;
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    padding: 2px;
+    box-sizing: border-box;
+}
+
+.cell {
+    border: 1px solid rgba(0,0,0,0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.piece {
+    width: 85%;
+    height: 85%;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #333;
+    color: black;
+    font-weight: bold;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.5);
+}
+
+.piece.red {
+    color: #e74c3c;
+    border-color: #c0392b;
+}
+
+.piece.black {
+    color: #2c3e50;
+    border-color: #000;
+}
+
+.shop-section {
+    margin-top: 15px;
+    background: #34495e;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.btn-pi {
+    background: #8e44ad;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-pi:hover {
+    background: #9b59b6;
+}
+
+.pi-bot-chat {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    height: 450px;
+    border: 2px solid #8e44ad;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    background: white;
+}
