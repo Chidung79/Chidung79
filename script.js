@@ -3,55 +3,30 @@ function onIncompletePaymentFound(payment) {
     console.log("Phát hiện giao dịch chưa hoàn tất:", payment);
 }
 
-// Khởi tạo và xác thực Pi Network
+// Khởi tạo Pi Network SDK
 function initPiNetwork() {
-    console.log("Đang kết nối tới Pi SDK...");
-
     if (typeof Pi === 'undefined') {
-        console.error("Chưa tải được Pi SDK!");
         document.getElementById('username').innerText = "Lỗi tải Pi SDK";
         return;
     }
 
-    // Tự động nhận diện môi trường (Chạy trực tiếp trên Pi Browser không dùng sandbox)
-    Pi.init({ version: "2.0", sandbox: false })
+    // Bật sandbox: true để thử nghiệm giao dịch trên Testnet
+    Pi.init({ version: "2.0", sandbox: true })
         .then(() => {
-            console.log("Pi SDK khởi tạo thành công. Bắt đầu xác thực...");
             return Pi.authenticate(['username', 'payments'], onIncompletePaymentFound);
         })
         .then(auth => {
-            console.log("Xác thực thành công!", auth);
             if (auth && auth.user) {
                 document.getElementById('username').innerText = "Kỳ thủ: " + auth.user.username;
             }
         })
         .catch(error => {
             console.error("Lỗi xác thực Pi:", error);
-            // Nếu chạy trên bản Production chưa verified, chuyển sang chế độ Sandbox dự phòng
-            if (error && error.message && error.message.includes("sandbox")) {
-                initSandboxFallback();
-            } else {
-                document.getElementById('username').innerText = "Kỳ thủ Khách";
-            }
-        });
-}
-
-// Hàm dự phòng cho môi trường thử nghiệm
-function initSandboxFallback() {
-    Pi.init({ version: "2.0", sandbox: true })
-        .then(() => Pi.authenticate(['username', 'payments'], onIncompletePaymentFound))
-        .then(auth => {
-            if (auth && auth.user) {
-                document.getElementById('username').innerText = "Kỳ thủ: " + auth.user.username;
-            }
-        })
-        .catch(err => {
-            console.error("Lỗi Sandbox:", err);
             document.getElementById('username').innerText = "Kỳ thủ Khách";
         });
 }
 
-// Hàm nạp Pi
+// Hàm xử lý nạp Pi (chế độ Testnet / Demo)
 function payWithPi() {
     if (typeof Pi === 'undefined') {
         alert("Pi SDK chưa sẵn sàng!");
@@ -64,17 +39,20 @@ function payWithPi() {
         metadata: { type: "deposit" },
     }, {
         onReadyForServerApproval: function(paymentId) {
-            console.log("Chờ duyệt paymentId:", paymentId);
+            console.log("Đã tạo giao dịch thành công với ID:", paymentId);
+            // Thông báo giả lập phê duyệt client thành công
+            alert("Tạo giao dịch Testnet thành công! ID: " + paymentId);
         },
         onReadyForServerCompletion: function(paymentId, txid) {
-            console.log("Thành công txid:", txid);
+            console.log("Hoàn tất giao dịch:", txid);
             alert("Thanh toán thành công!");
         },
         onCancel: function(paymentId) {
-            console.log("Đã hủy thanh toán:", paymentId);
+            console.log("Người dùng đã hủy giao dịch:", paymentId);
         },
         onError: function(error, payment) {
-            console.error("Lỗi thanh toán:", error);
+            console.error("Lỗi giao dịch:", error);
+            alert("Lỗi thanh toán: " + (error.message || "Giao dịch bị hủy"));
         }
     });
 }
