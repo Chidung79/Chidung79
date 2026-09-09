@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pi Chess Master - Cờ Tướng Online</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Nhúng thư viện Pi Network SDK để thanh toán -->
+    <script src="https://minepi.com"></script>
+</head>
+<body>
+    <div class="game-container">
+        <h1>棋 Pi Chess Master </h1>
+        <div class="user-info">
+            <span id="username">Đang kết nối Pi...</span>
+            <span id="balance">Ví: 0 Pi</span>
+        </div>
+        
+        <!-- Khu vực bàn cờ -->
+        <div id="chessboard"></div>
+
+        <!-- Khu vực nạp tiền bằng Pi coin -->
+        <div class="shop-section">
+            <h3>Nạp năng lượng / Mua vật phẩm</h3>
+            <button class="btn-pi" onclick="payWithPi(0.1)">Nạp 0.1 Pi (10 ván đấu)</button>
+            <button class="btn-pi" onclick="payWithPi(1)">Mua Bàn Cờ VIP (1 Pi)</button>
+        </div>
+    </div>
+
+    <!-- Nhúng con Bot AI bạn đã tạo ở App Studio vào góc màn hình -->
+    <iframe src="https://apppichessmaster4656.pinet.com" class="pi-bot-chat"></iframe>
+
+    <script src="script.js"></script>
+</body>
+</html>
