@@ -1,5 +1,16 @@
 function onIncompletePaymentFound(payment) {
-    console.log("Phát hiện giao dịch dở dang:", payment);
+    console.log("Phát hiện giao dịch dở dang:", payment.identifier);
+    fetch('/api/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentId: payment.identifier })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert("Đã giải phóng giao dịch kẹt! Vui lòng thử nạp lại.");
+        location.reload();
+    })
+    .catch(err => console.error("Lỗi hủy giao dịch:", err));
 }
 
 function initPiNetwork() {
